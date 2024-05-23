@@ -1,0 +1,258 @@
+<!-- HTML template (`index.html`) -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Resume Analysis</title>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            position: relative;
+        }
+
+        .top-text {
+            position: absolute;
+            top: 0;
+            left: 50px;
+            width: 100%;
+            font-size: 0.8em;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 300px;
+            background-color: #000000;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border-right: 1px solid #cccccc;
+        }
+
+        .output-container {
+            background-color: #ffffff;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            max-width: 600px;
+        }
+
+        h1,
+        p {
+            color: #f7f6f6;
+            font-size: 3em;
+        }
+
+        span {
+            color: #ffffff;
+        }
+
+        .pdf {
+            color: #ffffff;
+        }
+
+        h2 {
+            color: #040404;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        ul {
+            color: #101010;
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        input[type="file"],
+        button {
+            padding: 5px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #faf9f9;
+            color: #070707;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="file"]:hover,
+        button:hover {
+            background-color: #333333;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+
+        .no {
+            color: #000000;
+            font-size: 1.5em;
+        }
+
+        input {
+            padding: 25px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #faf9f9;
+            color: #070707;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .skills {
+            color: #f7f6f6;
+            font-size: 1em;
+            margin-top: 20px;
+            
+        }
+
+        .button {
+            padding: 5px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #faf9f9;
+            color: #070707;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+        }
+
+        .clear {
+            padding: 5px;
+
+
+        }
+
+        .cont {
+            display: flex;
+            position: relative;
+            left:450px ;
+            /* right: 10px; */
+            align-items: center;
+        }
+
+        .but {
+            position: fixed;
+            left: 8%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-text">
+        You can get summaries of candidate profiles, and figure out which candidates would be best suited for a
+        particular role and more.<br>
+        >Upload your pdf and get the data !!
+    </div>
+
+    <div class="sidebar">
+        <h1> <span>R</span>esume <span>A</span>nalyzer</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="pdf_files">
+                <input type="file" id="pdf_files" name="pdf_files" accept=".pdf" multiple>
+                <span class="button">Upload Resume</span>
+            </label>
+            <br><br>
+            
+            <div class="cont">
+                <for>
+                <label for="query">Search Skills:</label>
+                <p class="skills">Skills you want to search for</p>
+               
+                <input type="text" id="query" name="query">
+            </for>
+            </div>
+            <button class="but" type="submit">Analyze</button>
+
+        </form>
+
+        <!-- List of uploaded PDF files --><br><br>
+        <h2 class="pdf">Uploaded PDFs:</h2>
+        <ul class="pdf">
+            {% for pdf in uploaded_pdfs %}
+            <li>{{ pdf }}</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Clear uploads button -->
+        <form method="POST" action="/clear_uploads">
+            <button class="clear" type="submit">Clear Uploads</button>
+        </form>
+    </div>
+
+    <div class="output-container">
+        <!-- Summaries of uploaded resumes -->
+        {% for result in results %}
+        <div class="summary-box">
+            {% if result['name'] %}
+            <h2>Name: {{ result['name'] }}</h2>
+            {% endif %}
+            {% if result['emails'] %}
+            <h2>Emails:</h2>
+            <ul>
+                {% for email in result['emails'] %}
+                <li>{{ email }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if result['phone_number'] %}
+            <h2>Phone number: {{ result['phone_number'] }}</h2>
+            {% endif %}
+            {% if result['skills'] %}
+            <h2>Skills:</h2>
+            <ul>
+                {% for skill in result['skills'] %}
+                <li>{{ skill }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <!-- Chat results -->
+        <div class="chat-box">
+            <h2>Chat Results:</h2>
+            {% if result_from_chat %}
+            <ul>
+                {% for name in result_from_chat %}
+                <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="no">No results found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>
